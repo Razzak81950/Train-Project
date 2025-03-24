@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Schedule</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        table { width: 50%; margin: auto; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 10px; }
+        th { background-color: #f4a261; }
+    </style>
+</head>
+<body>
+    <h2>Live Train Schedule</h2>
+    <table id="trainTable">
+        <thead>
+            <tr>
+                <th>Train Name</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Replace with your Google Sheets CSV URL
+        const sheetURL = https://docs.google.com/spreadsheets/d/e/2PACX-1vT-N4DwnZk0Z7pi2EgNb4IxefpGUZwkmAltrX11yIYy19Ni9E_EhglNJCki5_8_0Tc15GtuCYjVNWCc/pub?gid=0&single=true&output=csv;
+
+        async function fetchTrainData() {
+            try {
+                const response = await fetch(sheetURL);
+                const data = await response.text();
+                const rows = data.split("\n").slice(1); // Remove headers
+
+                let tableBody = document.querySelector("#trainTable tbody");
+                tableBody.innerHTML = ""; // Clear existing data
+
+                rows.forEach(row => {
+                    let cols = row.split(",");
+                    if (cols.length >= 2) {
+                        let tr = document.createElement("tr");
+                        tr.innerHTML = `<td>${cols[0]}</td><td>${cols[1]}</td>`;
+                        tableBody.appendChild(tr);
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching train data:", error);
+            }
+        }
+
+        fetchTrainData();  // Initial call
+        setInterval(fetchTrainData, 60000); // Refresh every 60 seconds
+    </script>
+</body>
+</html>
