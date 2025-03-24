@@ -1,29 +1,27 @@
 <script>
-    // Your published Google Sheets CSV link
     const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-N4DwnZk0Z7pi2EgNb4IxefpGUZwkmAltrX11yIYy19Ni9E_EhglNJCki5_8_0Tc15GtuCYjVNWCc/pub?output=csv";
 
     async function fetchTrainData() {
         try {
             const response = await fetch(sheetURL);
             const data = await response.text();
-            const rows = data.split("\n").slice(1); // Skip the header row
+            const rows = data.split("\n").map(row => row.split(",")); // Convert CSV to array
 
             let tableBody = document.querySelector("#trainTable tbody");
-            tableBody.innerHTML = ""; // Clear previous data
+            tableBody.innerHTML = ""; // Clear old data
 
-            rows.forEach(row => {
-                let cols = row.split(",");
-                if (cols.length >= 2) {
-                    let tr = document.createElement("tr");
-                    tr.innerHTML = `<td>${cols[0]}</td><td>${cols[1]}</td>`;
-                    tableBody.appendChild(tr);
-                }
+            rows.forEach((cols, index) => {
+                if (index === 0 || cols.length < 2) return; // Skip header & empty rows
+                
+                let tr = document.createElement("tr");
+                tr.innerHTML = `<td>${cols[0].trim()}</td><td>${cols[1].trim()}</td>`;
+                tableBody.appendChild(tr);
             });
         } catch (error) {
             console.error("Error fetching train data:", error);
         }
     }
 
-    fetchTrainData(); // Load data initially
+    fetchTrainData(); // Load initially
     setInterval(fetchTrainData, 60000); // Refresh every 60 seconds
 </script>
